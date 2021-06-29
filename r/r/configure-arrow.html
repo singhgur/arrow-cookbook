@@ -219,43 +219,42 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## re2        TRUE
 ## snappy     TRUE
 ## gzip       TRUE
-## brotli    FALSE
+## brotli     TRUE
 ## zstd       TRUE
 ## lz4        TRUE
 ## lz4_frame  TRUE
 ## lzo       FALSE
-## bz2       FALSE
+## bz2        TRUE
 ## jemalloc   TRUE
 ## mimalloc   TRUE
 ## 
 ## Memory:
 ##                   
-## Allocator mimalloc
+## Allocator jemalloc
 ## Current    0 bytes
 ## Max        0 bytes
 ## 
 ## Runtime:
-##                        
-## SIMD Level          avx
-## Detected SIMD Level avx
+##                           
+## SIMD Level          avx512
+## Detected SIMD Level avx512
 ## 
 ## Build:
-##                                                              
-## C++ Library Version                            5.0.0-SNAPSHOT
-## C++ Compiler                                       AppleClang
-## C++ Compiler Version                          12.0.0.12000032
-## Git ID               fd0fc161105376c32380f7238ff2dd833acfca6d</code></pre>
+##                                    
+## C++ Library Version  5.0.0-SNAPSHOT
+## C++ Compiler                    GNU
+## C++ Compiler Version          7.5.0</code></pre>
 </div>
 <div id="control-how-many-cpus-are-being-used" class="section level2">
 <h2><span class="header-section-number">2.2</span> Control how many CPUs are being used</h2>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="configure-arrow.html#cb3-1"></a><span class="kw">cpu_count</span>()</span></code></pre></div>
-<pre><code>## [1] 3</code></pre>
+<pre><code>## [1] 2</code></pre>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="configure-arrow.html#cb5-1"></a><span class="kw">set_cpu_count</span>(<span class="dv">4</span>)</span></code></pre></div>
 </div>
 <div id="control-io-tthread-count" class="section level2">
 <h2><span class="header-section-number">2.3</span> Control IO Tthread count</h2>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="configure-arrow.html#cb6-1"></a><span class="kw">io_thread_count</span>()</span></code></pre></div>
-<pre><code>## [1] 3</code></pre>
+<pre><code>## [1] 2</code></pre>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="configure-arrow.html#cb8-1"></a><span class="kw">set_io_thread_count</span>(<span class="dv">2</span>)</span></code></pre></div>
 </div>
 <div id="switch-from-the-cran-version-to-the-development-version-of-arrow" class="section level2">
