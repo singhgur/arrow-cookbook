@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Arrow Cookbook</title>
-  <meta name="description" content="Arrow Cookbook" />
+  <title>2 Configure Arrow | Arrow Cookbook</title>
+  <meta name="description" content="2 Configure Arrow | Arrow Cookbook" />
   <meta name="generator" content="bookdown 0.22 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Arrow Cookbook" />
+  <meta property="og:title" content="2 Configure Arrow | Arrow Cookbook" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Arrow Cookbook" />
+  <meta name="twitter:title" content="2 Configure Arrow | Arrow Cookbook" />
   
   
   
@@ -29,8 +29,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-<link rel="next" href="configure-arrow.html"/>
+<link rel="prev" href="index.html"/>
+<link rel="next" href="work-with-data-in-different-formats.html"/>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -203,21 +203,86 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="header">
-<h1 class="title">Arrow Cookbook</h1>
+<div id="configure-arrow" class="section level1">
+<h1><span class="header-section-number">2</span> Configure Arrow</h1>
+<div id="get-config-information-and-check-which-components-are-available" class="section level2">
+<h2><span class="header-section-number">2.1</span> Get config information and check which components are available</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="configure-arrow.html#cb1-1"></a><span class="kw">arrow_info</span>()</span></code></pre></div>
+<pre><code>## Arrow package version: 4.0.1.20210628
+## 
+## Capabilities:
+##                
+## dataset    TRUE
+## parquet    TRUE
+## s3         TRUE
+## utf8proc   TRUE
+## re2        TRUE
+## snappy     TRUE
+## gzip       TRUE
+## brotli     TRUE
+## zstd       TRUE
+## lz4        TRUE
+## lz4_frame  TRUE
+## lzo       FALSE
+## bz2        TRUE
+## jemalloc   TRUE
+## mimalloc   TRUE
+## 
+## Memory:
+##                   
+## Allocator jemalloc
+## Current    0 bytes
+## Max        0 bytes
+## 
+## Runtime:
+##                           
+## SIMD Level          avx512
+## Detected SIMD Level avx512
+## 
+## Build:
+##                                    
+## C++ Library Version  5.0.0-SNAPSHOT
+## C++ Compiler                    GNU
+## C++ Compiler Version          7.5.0</code></pre>
 </div>
-<div id="preface" class="section level1">
-<h1><span class="header-section-number">1</span> Preface</h1>
-<p>This cookbook aims to provide a number of recipes showing how to perform common tasks using <code>arrow</code>.</p>
+<div id="control-how-many-cpus-are-being-used" class="section level2">
+<h2><span class="header-section-number">2.2</span> Control how many CPUs are being used</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="configure-arrow.html#cb3-1"></a><span class="kw">cpu_count</span>()</span></code></pre></div>
+<pre><code>## [1] 2</code></pre>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="configure-arrow.html#cb5-1"></a><span class="kw">set_cpu_count</span>(<span class="dv">4</span>)</span></code></pre></div>
+</div>
+<div id="control-io-tthread-count" class="section level2">
+<h2><span class="header-section-number">2.3</span> Control IO Tthread count</h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="configure-arrow.html#cb6-1"></a><span class="kw">io_thread_count</span>()</span></code></pre></div>
+<pre><code>## [1] 2</code></pre>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="configure-arrow.html#cb8-1"></a><span class="kw">set_io_thread_count</span>(<span class="dv">2</span>)</span></code></pre></div>
+</div>
+<div id="switch-from-the-cran-version-to-the-development-version-of-arrow" class="section level2">
+<h2><span class="header-section-number">2.4</span> Switch from the CRAN version to the development version of arrow</h2>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="configure-arrow.html#cb9-1"></a><span class="kw">install_arrow</span>(<span class="dt">nightly =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
+</div>
+<div id="switch-from-the-development-version-to-cran-version-of-arrow" class="section level2">
+<h2><span class="header-section-number">2.5</span> Switch from the development version to CRAN version of arrow</h2>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="configure-arrow.html#cb10-1"></a><span class="kw">install_arrow</span>()</span></code></pre></div>
+</div>
+<div id="install-compression-libraries" class="section level2">
+<h2><span class="header-section-number">2.6</span> Install compression libraries</h2>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="configure-arrow.html#cb11-1"></a><span class="kw">codec_is_available</span>(<span class="st">&quot;lzo&quot;</span>)</span></code></pre></div>
+<pre><code>## [1] FALSE</code></pre>
+</div>
+<div id="install-the-arrow-r-package-using-the-system-arrow-installation" class="section level2">
+<h2><span class="header-section-number">2.7</span> Install the Arrow R package using the system Arrow installation</h2>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="configure-arrow.html#cb13-1"></a><span class="kw">install_arrow</span>(<span class="dt">use_system =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
 
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-<a href="configure-arrow.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="work-with-data-in-different-formats.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -249,7 +314,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/ursa-computing/arrow-r-cookbook/edit/master/index.Rmd",
+"link": "https://github.com/ursa-computing/arrow-r-cookbook/edit/master/configure_arrow.Rmd",
 "text": "Edit"
 },
 "history": {
