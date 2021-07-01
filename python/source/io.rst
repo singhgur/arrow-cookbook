@@ -168,3 +168,149 @@ provided to :func:`pyarrow.csv.read_csv` to drive
     pyarrow.Table
     col1: int64
     ChunkedArray = 0 .. 99
+
+Reading Partitioned data
+========================
+
+In some cases, your dataset might be composed by multiple separate
+files each containing a piece of the data. 
+
+.. testsetup::
+
+    import pathlib
+    import pyarrow.parquet as pq
+
+    examples = pathlib.Path("examples")
+    examples.mkdir(exist_ok=True)
+
+    pq.write_table(pa.table({"col1": range(10)}), 
+                   examples / "dataset1.parquet", compression=None)
+    pq.write_table(pa.table({"col1": range(10, 20)}), 
+                   examples / "dataset2.parquet", compression=None)
+    pq.write_table(pa.table({"col1": range(20, 30)}), 
+                   examples / "dataset3.parquet", compression=None)
+
+In this case the :func:`pyarrow.dataset.dataset` function provides
+an interface to discover and read all those files as a single big dataset.
+
+For example if we have a structure like:
+
+.. code-block::
+
+    examples/
+    ├── dataset1.parquet
+    ├── dataset2.parquet
+    └── dataset3.parquet
+
+Then, pointing the ``dataset`` function to the ``examples`` directory
+will discover those parquet files and will expose them all as a single
+dataset:
+
+.. testcode::
+
+    import pyarrow.dataset as ds
+
+    dataset = ds.dataset("./examples", format="parquet")
+    print(dataset.files)
+
+.. testoutput::
+
+    ['./examples/dataset1.parquet', './examples/dataset2.parquet', './examples/dataset3.parquet']
+
+The whole dataset can be viewed as a single big table using
+:meth:`pyarrow.dataset.Dataset.to_table`. While each parquet file
+contains only 10 rows, converting the dataset to a table will
+expose them as a single block of data
+
+.. testcode::
+
+    table = dataset.to_table()
+    print(table)
+
+    col1 = table["col1"]
+    print(f"{type(col1).__name__} = {col1[0]} .. {col1[-1]}")
+
+.. testoutput::
+
+    pyarrow.Table
+    col1: int64
+    ChunkedArray = 0 .. 29
+
+Notice that converting to a table will force all data to be loaded 
+in memory, which for big datasets is not what you usually want.
+
+For this reason, it might be better to rely on the 
+:meth:`pyarrow.dataset.Dataset.to_batches` method, which allows to
+iteratively load a chunk of data at the time returning a 
+:class:`pyarrow.RecordBatch` for each one of them.
+
+.. testcode::
+
+    for record_batch in dataset.to_batches():
+        col1 = record_batch.column("col1")
+        print(f"{col1._name} = {col1[0]} .. {col1[-1]}")
+
+.. testoutput::
+
+    col1 = 0 .. 9
+    col1 = 10 .. 19
+    col1 = 20 .. 29
+
+Reading Partitioned Data from S3
+================================
+
+The :class:`pyarrow.dataset.Dataset` is also able to abstract
+partitioned data coming from remote sources like S3 or HDFS.
+
+.. testcode::
+
+    from pyarrow import fs
+
+    # List content of s3://ursa-labs-taxi-data/2011
+    s3 = fs.SubTreeFileSystem("ursa-labs-taxi-data", fs.S3FileSystem(region="us-east-2"))
+    for entry in s3.get_file_info(fs.FileSelector("2011", recursive=True)):
+        if entry.type == fs.FileType.File:
+            print(entry.path)
+
+.. testoutput::
+
+    2011/01/data.parquet
+    2011/02/data.parquet
+    2011/03/data.parquet
+    2011/04/data.parquet
+    2011/05/data.parquet
+    2011/06/data.parquet
+    2011/07/data.parquet
+    2011/08/data.parquet
+    2011/09/data.parquet
+    2011/10/data.parquet
+    2011/11/data.parquet
+    2011/12/data.parquet
+
+The data in the bucket can be loaded as a single big dataset partitioned
+by ``year`` and ``month`` using
+
+.. testcode::
+
+    dataset = ds.dataset("s3://ursa-labs-taxi-data/", 
+                         partitioning=["year", "month"])
+    for f in dataset.files[:10]:
+        print(f)
+    print("...")
+
+.. testoutput::
+
+    ursa-labs-taxi-data/2009/01/data.parquet
+    ursa-labs-taxi-data/2009/02/data.parquet
+    ursa-labs-taxi-data/2009/03/data.parquet
+    ursa-labs-taxi-data/2009/04/data.parquet
+    ursa-labs-taxi-data/2009/05/data.parquet
+    ursa-labs-taxi-data/2009/06/data.parquet
+    ursa-labs-taxi-data/2009/07/data.parquet
+    ursa-labs-taxi-data/2009/08/data.parquet
+    ursa-labs-taxi-data/2009/09/data.parquet
+    ursa-labs-taxi-data/2009/10/data.parquet
+    ...
+
+The dataset can then be used with :meth:`pyarrow.dataset.Dataset.to_table`
+or :meth:`pyarrow.dataset.Dataset.to_batches` like you would for a local one.
