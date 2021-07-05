@@ -15,6 +15,7 @@
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Creating Arrow Objects" href="create.html" />
     <link rel="prev" title="Welcome to Apache Arrow Cookbook’s documentation!" href="index.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -43,10 +44,15 @@ Apache Arrow.</p>
 <ul>
 <li><p><a class="reference internal" href="#write-a-parquet-file" id="id2">Write a Parquet file</a></p></li>
 <li><p><a class="reference internal" href="#reading-a-parquet-file" id="id3">Reading a Parquet file</a></p></li>
-<li><p><a class="reference internal" href="#saving-arrow-arrays-to-disk" id="id4">Saving Arrow Arrays to disk</a></p></li>
-<li><p><a class="reference internal" href="#memory-mapping-arrow-arrays-from-disk" id="id5">Memory Mapping Arrow Arrays from disk</a></p></li>
-<li><p><a class="reference internal" href="#writing-csv-files" id="id6">Writing CSV files</a></p></li>
-<li><p><a class="reference internal" href="#reading-csv-files" id="id7">Reading CSV files</a></p></li>
+<li><p><a class="reference internal" href="#reading-a-subset-of-parquet-data" id="id4">Reading a subset of Parquet data</a></p></li>
+<li><p><a class="reference internal" href="#saving-arrow-arrays-to-disk" id="id5">Saving Arrow Arrays to disk</a></p></li>
+<li><p><a class="reference internal" href="#memory-mapping-arrow-arrays-from-disk" id="id6">Memory Mapping Arrow Arrays from disk</a></p></li>
+<li><p><a class="reference internal" href="#writing-csv-files" id="id7">Writing CSV files</a></p></li>
+<li><p><a class="reference internal" href="#reading-csv-files" id="id8">Reading CSV files</a></p></li>
+<li><p><a class="reference internal" href="#reading-partitioned-data" id="id9">Reading Partitioned data</a></p></li>
+<li><p><a class="reference internal" href="#reading-partitioned-data-from-s3" id="id10">Reading Partitioned Data from S3</a></p></li>
+<li><p><a class="reference internal" href="#write-a-feather-file" id="id11">Write a Feather file</a></p></li>
+<li><p><a class="reference internal" href="#reading-a-feather-file" id="id12">Reading a Feather file</a></p></li>
 </ul>
 </li>
 </ul>
@@ -98,8 +104,38 @@ ChunkedArray = 0 .. 99
 </pre></div>
 </div>
 </section>
+<section id="reading-a-subset-of-parquet-data">
+<h2><a class="toc-backref" href="#id4">Reading a subset of Parquet data</a><a class="headerlink" href="#reading-a-subset-of-parquet-data" title="Permalink to this headline">¶</a></h2>
+<p>When reading a Parquet file with <a class="reference external" href="https://arrow.apache.org/docs/python/generated/pyarrow.parquet.read_table.html#pyarrow.parquet.read_table" title="(in Apache Arrow v4.0.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">pyarrow.parquet.read_table()</span></code></a>
+it is possible to restrict which Columns and Rows have to be read
+in memory by using the <code class="docutils literal notranslate"><span class="pre">filters</span></code> and <code class="docutils literal notranslate"><span class="pre">columns</span></code> arguments</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pyarrow.parquet</span> <span class="k">as</span> <span class="nn">pq</span>
+
+<span class="n">table</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">read_table</span><span class="p">(</span><span class="s2">&quot;example.parquet&quot;</span><span class="p">,</span>
+                      <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;col1&quot;</span><span class="p">],</span>
+                      <span class="n">filters</span><span class="o">=</span><span class="p">[</span>
+                          <span class="p">(</span><span class="s2">&quot;col1&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+                          <span class="p">(</span><span class="s2">&quot;col1&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
+                      <span class="p">])</span>
+</pre></div>
+</div>
+<p>The resulting table will contain only the projected columns
+and filtered rows. Refer to <a class="reference external" href="https://arrow.apache.org/docs/python/generated/pyarrow.parquet.read_table.html#pyarrow.parquet.read_table" title="(in Apache Arrow v4.0.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">pyarrow.parquet.read_table()</span></code></a>
+documentation for details about filters syntax.</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+
+<span class="n">col1</span> <span class="o">=</span> <span class="n">table</span><span class="p">[</span><span class="s2">&quot;col1&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;{type(col1).__name__} = </span><span class="si">{col1[0]}</span><span class="s2"> .. </span><span class="si">{col1[-1]}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pyarrow.Table
+col1: int64
+ChunkedArray = 6 .. 9
+</pre></div>
+</div>
+</section>
 <section id="saving-arrow-arrays-to-disk">
-<h2><a class="toc-backref" href="#id4">Saving Arrow Arrays to disk</a><a class="headerlink" href="#saving-arrow-arrays-to-disk" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id5">Saving Arrow Arrays to disk</a><a class="headerlink" href="#saving-arrow-arrays-to-disk" title="Permalink to this headline">¶</a></h2>
 <p>Apart using arrow to read and save common file formats like Parquet,
 it is possible to dump data in the raw arrow format which allows
 direct memory mapping of data from disk.</p>
@@ -127,7 +163,7 @@ we would just have to adapt the <code class="docutils literal notranslate"><span
 them all to the <code class="docutils literal notranslate"><span class="pre">record_batch</span></code> call.</p>
 </section>
 <section id="memory-mapping-arrow-arrays-from-disk">
-<h2><a class="toc-backref" href="#id5">Memory Mapping Arrow Arrays from disk</a><a class="headerlink" href="#memory-mapping-arrow-arrays-from-disk" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id6">Memory Mapping Arrow Arrays from disk</a><a class="headerlink" href="#memory-mapping-arrow-arrays-from-disk" title="Permalink to this headline">¶</a></h2>
 <p>Arrow arrays that have been written to disk in the Arrow
 format itself can be memory mapped back directly from the disk.</p>
 <div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">pa</span><span class="o">.</span><span class="n">memory_map</span><span class="p">(</span><span class="s1">&#39;arraydata.arrow&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">source</span><span class="p">:</span>
@@ -143,7 +179,7 @@ format itself can be memory mapped back directly from the disk.</p>
 </div>
 </section>
 <section id="writing-csv-files">
-<h2><a class="toc-backref" href="#id6">Writing CSV files</a><a class="headerlink" href="#writing-csv-files" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id7">Writing CSV files</a><a class="headerlink" href="#writing-csv-files" title="Permalink to this headline">¶</a></h2>
 <p>It is currently possible to write an Arrow <a class="reference external" href="https://arrow.apache.org/docs/python/generated/pyarrow.Table.html#pyarrow.Table" title="(in Apache Arrow v4.0.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyarrow.Table</span></code></a> to
 CSV by going through pandas. Arrow doesn’t currently provide an optimized
 code path for writing to CSV.</p>
@@ -153,7 +189,7 @@ code path for writing to CSV.</p>
 </div>
 </section>
 <section id="reading-csv-files">
-<h2><a class="toc-backref" href="#id7">Reading CSV files</a><a class="headerlink" href="#reading-csv-files" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id8">Reading CSV files</a><a class="headerlink" href="#reading-csv-files" title="Permalink to this headline">¶</a></h2>
 <p>Arrow can read <a class="reference external" href="https://arrow.apache.org/docs/python/generated/pyarrow.Table.html#pyarrow.Table" title="(in Apache Arrow v4.0.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyarrow.Table</span></code></a> entities from CSV using an
 optimized codepath that can leverage multiple threads.</p>
 <div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pyarrow.csv</span>
@@ -164,6 +200,168 @@ optimized codepath that can leverage multiple threads.</p>
 <p>Arrow will do its best to guess data types, further options can be
 provided to <a class="reference external" href="https://arrow.apache.org/docs/python/generated/pyarrow.csv.read_csv.html#pyarrow.csv.read_csv" title="(in Apache Arrow v4.0.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">pyarrow.csv.read_csv()</span></code></a> to drive
 <a class="reference external" href="https://arrow.apache.org/docs/python/generated/pyarrow.csv.ConvertOptions.html#pyarrow.csv.ConvertOptions" title="(in Apache Arrow v4.0.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyarrow.csv.ConvertOptions</span></code></a>.</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+
+<span class="n">col1</span> <span class="o">=</span> <span class="n">table</span><span class="p">[</span><span class="s2">&quot;col1&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;{type(col1).__name__} = </span><span class="si">{col1[0]}</span><span class="s2"> .. </span><span class="si">{col1[-1]}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pyarrow.Table
+col1: int64
+ChunkedArray = 0 .. 99
+</pre></div>
+</div>
+</section>
+<section id="reading-partitioned-data">
+<h2><a class="toc-backref" href="#id9">Reading Partitioned data</a><a class="headerlink" href="#reading-partitioned-data" title="Permalink to this headline">¶</a></h2>
+<p>In some cases, your dataset might be composed by multiple separate
+files each containing a piece of the data.</p>
+<p>In this case the <a class="reference external" href="https://arrow.apache.org/docs/python/generated/pyarrow.dataset.dataset.html#pyarrow.dataset.dataset" title="(in Apache Arrow v4.0.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">pyarrow.dataset.dataset()</span></code></a> function provides
+an interface to discover and read all those files as a single big dataset.</p>
+<p>For example if we have a structure like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>examples/
+├── dataset1.parquet
+├── dataset2.parquet
+└── dataset3.parquet
+</pre></div>
+</div>
+<p>Then, pointing the <code class="docutils literal notranslate"><span class="pre">dataset</span></code> function to the <code class="docutils literal notranslate"><span class="pre">examples</span></code> directory
+will discover those parquet files and will expose them all as a single
+dataset:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pyarrow.dataset</span> <span class="k">as</span> <span class="nn">ds</span>
+
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">dataset</span><span class="p">(</span><span class="s2">&quot;./examples&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;parquet&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">files</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[&#39;./examples/dataset1.parquet&#39;, &#39;./examples/dataset2.parquet&#39;, &#39;./examples/dataset3.parquet&#39;]
+</pre></div>
+</div>
+<p>The whole dataset can be viewed as a single big table using
+<a class="reference external" href="https://arrow.apache.org/docs/python/generated/pyarrow.dataset.Dataset.html#pyarrow.dataset.Dataset.to_table" title="(in Apache Arrow v4.0.1)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyarrow.dataset.Dataset.to_table()</span></code></a>. While each parquet file
+contains only 10 rows, converting the dataset to a table will
+expose them as a single block of data</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">table</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">to_table</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+
+<span class="n">col1</span> <span class="o">=</span> <span class="n">table</span><span class="p">[</span><span class="s2">&quot;col1&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;{type(col1).__name__} = </span><span class="si">{col1[0]}</span><span class="s2"> .. </span><span class="si">{col1[-1]}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pyarrow.Table
+col1: int64
+ChunkedArray = 0 .. 29
+</pre></div>
+</div>
+<p>Notice that converting to a table will force all data to be loaded
+in memory, which for big datasets is not what you usually want.</p>
+<p>For this reason, it might be better to rely on the
+<a class="reference external" href="https://arrow.apache.org/docs/python/generated/pyarrow.dataset.Dataset.html#pyarrow.dataset.Dataset.to_batches" title="(in Apache Arrow v4.0.1)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyarrow.dataset.Dataset.to_batches()</span></code></a> method, which allows to
+iteratively load a chunk of data at the time returning a
+<a class="reference external" href="https://arrow.apache.org/docs/python/generated/pyarrow.RecordBatch.html#pyarrow.RecordBatch" title="(in Apache Arrow v4.0.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyarrow.RecordBatch</span></code></a> for each one of them.</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">record_batch</span> <span class="ow">in</span> <span class="n">dataset</span><span class="o">.</span><span class="n">to_batches</span><span class="p">():</span>
+    <span class="n">col1</span> <span class="o">=</span> <span class="n">record_batch</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;col1&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{col1._name}</span><span class="s2"> = </span><span class="si">{col1[0]}</span><span class="s2"> .. </span><span class="si">{col1[-1]}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>col1 = 0 .. 9
+col1 = 10 .. 19
+col1 = 20 .. 29
+</pre></div>
+</div>
+</section>
+<section id="reading-partitioned-data-from-s3">
+<h2><a class="toc-backref" href="#id10">Reading Partitioned Data from S3</a><a class="headerlink" href="#reading-partitioned-data-from-s3" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference external" href="https://arrow.apache.org/docs/python/generated/pyarrow.dataset.Dataset.html#pyarrow.dataset.Dataset" title="(in Apache Arrow v4.0.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyarrow.dataset.Dataset</span></code></a> is also able to abstract
+partitioned data coming from remote sources like S3 or HDFS.</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyarrow</span> <span class="k">import</span> <span class="n">fs</span>
+
+<span class="c1"># List content of s3://ursa-labs-taxi-data/2011</span>
+<span class="n">s3</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">SubTreeFileSystem</span><span class="p">(</span><span class="s2">&quot;ursa-labs-taxi-data&quot;</span><span class="p">,</span> <span class="n">fs</span><span class="o">.</span><span class="n">S3FileSystem</span><span class="p">(</span><span class="n">region</span><span class="o">=</span><span class="s2">&quot;us-east-2&quot;</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">s3</span><span class="o">.</span><span class="n">get_file_info</span><span class="p">(</span><span class="n">fs</span><span class="o">.</span><span class="n">FileSelector</span><span class="p">(</span><span class="s2">&quot;2011&quot;</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">fs</span><span class="o">.</span><span class="n">FileType</span><span class="o">.</span><span class="n">File</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>2011/01/data.parquet
+2011/02/data.parquet
+2011/03/data.parquet
+2011/04/data.parquet
+2011/05/data.parquet
+2011/06/data.parquet
+2011/07/data.parquet
+2011/08/data.parquet
+2011/09/data.parquet
+2011/10/data.parquet
+2011/11/data.parquet
+2011/12/data.parquet
+</pre></div>
+</div>
+<p>The data in the bucket can be loaded as a single big dataset partitioned
+by <code class="docutils literal notranslate"><span class="pre">month</span></code> using</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">dataset</span><span class="p">(</span><span class="s2">&quot;s3://ursa-labs-taxi-data/2011&quot;</span><span class="p">,</span>
+                     <span class="n">partitioning</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;month&quot;</span><span class="p">])</span>
+<span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">dataset</span><span class="o">.</span><span class="n">files</span><span class="p">[:</span><span class="mi">10</span><span class="p">]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;...&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>ursa-labs-taxi-data/2011/01/data.parquet
+ursa-labs-taxi-data/2011/02/data.parquet
+ursa-labs-taxi-data/2011/03/data.parquet
+ursa-labs-taxi-data/2011/04/data.parquet
+ursa-labs-taxi-data/2011/05/data.parquet
+ursa-labs-taxi-data/2011/06/data.parquet
+ursa-labs-taxi-data/2011/07/data.parquet
+ursa-labs-taxi-data/2011/08/data.parquet
+ursa-labs-taxi-data/2011/09/data.parquet
+ursa-labs-taxi-data/2011/10/data.parquet
+...
+</pre></div>
+</div>
+<p>The dataset can then be used with <a class="reference external" href="https://arrow.apache.org/docs/python/generated/pyarrow.dataset.Dataset.html#pyarrow.dataset.Dataset.to_table" title="(in Apache Arrow v4.0.1)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyarrow.dataset.Dataset.to_table()</span></code></a>
+or <a class="reference external" href="https://arrow.apache.org/docs/python/generated/pyarrow.dataset.Dataset.html#pyarrow.dataset.Dataset.to_batches" title="(in Apache Arrow v4.0.1)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyarrow.dataset.Dataset.to_batches()</span></code></a> like you would for a local one.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is possible to load partitioned data also in the ipc arrow
+format or in feather format.</p>
+</div>
+</section>
+<section id="write-a-feather-file">
+<h2><a class="toc-backref" href="#id11">Write a Feather file</a><a class="headerlink" href="#write-a-feather-file" title="Permalink to this headline">¶</a></h2>
+<p>Given an array with all numbers from 0 to 100</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{arr[0]}</span><span class="s2"> .. </span><span class="si">{arr[-1]}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>0 .. 99
+</pre></div>
+</div>
+<p>To write it to a Feather file, as Feather is a columnar format,
+we must create a <a class="reference external" href="https://arrow.apache.org/docs/python/generated/pyarrow.Table.html#pyarrow.Table" title="(in Apache Arrow v4.0.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyarrow.Table</span></code></a> out of it,
+so that we get a table of a single column which can then be
+written to a Feather file.</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">table</span> <span class="o">=</span> <span class="n">pa</span><span class="o">.</span><span class="n">Table</span><span class="o">.</span><span class="n">from_arrays</span><span class="p">([</span><span class="n">arr</span><span class="p">],</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;col1&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Once we have a table, it can be written to a Feather File
+using the functions provided by the <code class="docutils literal notranslate"><span class="pre">pyarrow.feather</span></code> module</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pyarrow.feather</span> <span class="k">as</span> <span class="nn">ft</span>
+
+<span class="n">ft</span><span class="o">.</span><span class="n">write_feather</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="s1">&#39;example.feather&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="reading-a-feather-file">
+<h2><a class="toc-backref" href="#id12">Reading a Feather file</a><a class="headerlink" href="#reading-a-feather-file" title="Permalink to this headline">¶</a></h2>
+<p>Given a Feather file, it can be read back to a <a class="reference external" href="https://arrow.apache.org/docs/python/generated/pyarrow.Table.html#pyarrow.Table" title="(in Apache Arrow v4.0.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyarrow.Table</span></code></a>
+by using <a class="reference external" href="https://arrow.apache.org/docs/python/generated/pyarrow.feather.read_table.html#pyarrow.feather.read_table" title="(in Apache Arrow v4.0.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">pyarrow.feather.read_table()</span></code></a> function</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pyarrow.feather</span> <span class="k">as</span> <span class="nn">ft</span>
+
+<span class="n">table</span> <span class="o">=</span> <span class="n">ft</span><span class="o">.</span><span class="n">read_table</span><span class="p">(</span><span class="s2">&quot;example.feather&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The resulting table will contain the same columns that existed in
+the parquet file as <code class="xref py py-class docutils literal notranslate"><span class="pre">ChunkedArray</span></code></p>
 <div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
 
 <span class="n">col1</span> <span class="o">=</span> <span class="n">table</span><span class="p">[</span><span class="s2">&quot;col1&quot;</span><span class="p">]</span>
@@ -200,12 +398,18 @@ ChunkedArray = 0 .. 99
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Reading and Writing Data</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#write-a-parquet-file">Write a Parquet file</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#reading-a-parquet-file">Reading a Parquet file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reading-a-subset-of-parquet-data">Reading a subset of Parquet data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#saving-arrow-arrays-to-disk">Saving Arrow Arrays to disk</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#memory-mapping-arrow-arrays-from-disk">Memory Mapping Arrow Arrays from disk</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#writing-csv-files">Writing CSV files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#reading-csv-files">Reading CSV files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reading-partitioned-data">Reading Partitioned data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reading-partitioned-data-from-s3">Reading Partitioned Data from S3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#write-a-feather-file">Write a Feather file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reading-a-feather-file">Reading a Feather file</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="create.html">Creating Arrow Objects</a></li>
 </ul>
 
 <div class="relations">
@@ -213,6 +417,7 @@ ChunkedArray = 0 .. 99
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
       <li>Previous: <a href="index.html" title="previous chapter">Welcome to Apache Arrow Cookbook’s documentation!</a></li>
+      <li>Next: <a href="create.html" title="next chapter">Creating Arrow Objects</a></li>
   </ul></li>
 </ul>
 </div>
@@ -242,7 +447,7 @@ ChunkedArray = 0 .. 99
       &copy;2021, Apache Software Foundation.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
