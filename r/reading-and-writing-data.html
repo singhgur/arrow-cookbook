@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>2 Reading and Writing Data | Arrow Cookbook</title>
+  <meta name="description" content="2 Reading and Writing Data | Arrow Cookbook" />
+  <meta name="generator" content="bookdown 0.22 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="2 Reading and Writing Data | Arrow Cookbook" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="2 Reading and Writing Data | Arrow Cookbook" />
+  
+  
+  
+
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="index.html"/>
+<link rel="next" href="creating-arrow-objects.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<link href="libs/testrmd-0.0.1.9000/testrmd.css" rel="stylesheet" />
+
+
+<style type="text/css">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Preface</a></li>
+<li class="chapter" data-level="2" data-path="reading-and-writing-data.html"><a href="reading-and-writing-data.html"><i class="fa fa-check"></i><b>2</b> Reading and Writing Data</a><ul>
+<li class="chapter" data-level="2.1" data-path="reading-and-writing-data.html"><a href="reading-and-writing-data.html#reading-and-writing-parquet-files"><i class="fa fa-check"></i><b>2.1</b> Reading and Writing Parquet Files</a><ul>
+<li class="chapter" data-level="2.1.1" data-path="reading-and-writing-data.html"><a href="reading-and-writing-data.html#writing-a-parquet-file"><i class="fa fa-check"></i><b>2.1.1</b> Writing a Parquet file</a></li>
+<li class="chapter" data-level="2.1.2" data-path="reading-and-writing-data.html"><a href="reading-and-writing-data.html#reading-a-parquet-file"><i class="fa fa-check"></i><b>2.1.2</b> Reading a Parquet file</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="reading-and-writing-data.html"><a href="reading-and-writing-data.html#how-to-read-a-partitioned-parquet-file-from-s3"><i class="fa fa-check"></i><b>2.2</b> How to read a (partitioned) Parquet file from S3</a></li>
+<li class="chapter" data-level="2.3" data-path="reading-and-writing-data.html"><a href="reading-and-writing-data.html#how-to-filter-rows-or-columns-while-reading-a-parquet-file"><i class="fa fa-check"></i><b>2.3</b> How to filter rows or columns while reading a Parquet file</a></li>
+<li class="chapter" data-level="2.4" data-path="reading-and-writing-data.html"><a href="reading-and-writing-data.html#reading-and-writing-csv-files"><i class="fa fa-check"></i><b>2.4</b> Reading and Writing CSV files</a></li>
+<li class="chapter" data-level="2.5" data-path="reading-and-writing-data.html"><a href="reading-and-writing-data.html#reading-and-writing-partitioned-data"><i class="fa fa-check"></i><b>2.5</b> Reading and Writing Partitioned Data</a><ul>
+<li class="chapter" data-level="2.5.1" data-path="reading-and-writing-data.html"><a href="reading-and-writing-data.html#writing-partitioned-data"><i class="fa fa-check"></i><b>2.5.1</b> Writing Partitioned Data</a></li>
+<li class="chapter" data-level="2.5.2" data-path="reading-and-writing-data.html"><a href="reading-and-writing-data.html#reading-partitioned-data"><i class="fa fa-check"></i><b>2.5.2</b> Reading Partitioned Data</a></li>
+</ul></li>
+<li class="chapter" data-level="2.6" data-path="reading-and-writing-data.html"><a href="reading-and-writing-data.html#reading-and-writing-feather-files"><i class="fa fa-check"></i><b>2.6</b> Reading and Writing Feather files</a><ul>
+<li class="chapter" data-level="2.6.1" data-path="reading-and-writing-data.html"><a href="reading-and-writing-data.html#write-an-ipcfeather-v2-file"><i class="fa fa-check"></i><b>2.6.1</b> Write an IPC/Feather V2 file</a></li>
+<li class="chapter" data-level="2.6.2" data-path="reading-and-writing-data.html"><a href="reading-and-writing-data.html#write-a-feather-version-1-file"><i class="fa fa-check"></i><b>2.6.2</b> Write a Feather (version 1) file</a></li>
+<li class="chapter" data-level="2.6.3" data-path="reading-and-writing-data.html"><a href="reading-and-writing-data.html#read-a-feather-file"><i class="fa fa-check"></i><b>2.6.3</b> Read a Feather file</a></li>
+</ul></li>
+<li class="chapter" data-level="2.7" data-path="reading-and-writing-data.html"><a href="reading-and-writing-data.html#reading-and-writing-streaming-ipc-files"><i class="fa fa-check"></i><b>2.7</b> Reading and Writing Streaming IPC Files</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="creating-arrow-objects.html"><a href="creating-arrow-objects.html"><i class="fa fa-check"></i><b>3</b> Creating Arrow Objects</a><ul>
+<li class="chapter" data-level="3.1" data-path="creating-arrow-objects.html"><a href="creating-arrow-objects.html#build-an-arrow-table-from-native-language-types"><i class="fa fa-check"></i><b>3.1</b> Build an Arrow Table from native language types</a><ul>
+<li class="chapter" data-level="3.1.1" data-path="creating-arrow-objects.html"><a href="creating-arrow-objects.html#manually-create-a-table-from-an-r-object"><i class="fa fa-check"></i><b>3.1.1</b> Manually create a table from an R object</a></li>
+<li class="chapter" data-level="3.1.2" data-path="creating-arrow-objects.html"><a href="creating-arrow-objects.html#manually-create-a-recordbatch"><i class="fa fa-check"></i><b>3.1.2</b> Manually create a RecordBatch</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="creating-arrow-objects.html"><a href="creating-arrow-objects.html#storing-categorical-data-in-arrow"><i class="fa fa-check"></i><b>3.2</b> Storing Categorical Data in Arrow</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="manipulating-data.html"><a href="manipulating-data.html"><i class="fa fa-check"></i><b>4</b> Manipulating Data</a><ul>
+<li class="chapter" data-level="4.1" data-path="manipulating-data.html"><a href="manipulating-data.html#computing-meanminmax-etc-value-of-an-array"><i class="fa fa-check"></i><b>4.1</b> Computing Mean/Min/Max, etc value of an array</a></li>
+<li class="chapter" data-level="4.2" data-path="manipulating-data.html"><a href="manipulating-data.html#counting-occurrences-of-elements-in-an-array"><i class="fa fa-check"></i><b>4.2</b> Counting occurrences of elements in an array</a></li>
+<li class="chapter" data-level="4.3" data-path="manipulating-data.html"><a href="manipulating-data.html#applying-arithmetic-functions-to-arrays."><i class="fa fa-check"></i><b>4.3</b> Applying arithmetic functions to arrays.</a></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Arrow Cookbook</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="reading-and-writing-data" class="section level1">
+<h1><span class="header-section-number">2</span> Reading and Writing Data</h1>
+<p>This chapter contains recipes related to reading and writing data from disk using Apache Arrow.</p>
+<div id="reading-and-writing-parquet-files" class="section level2">
+<h2><span class="header-section-number">2.1</span> Reading and Writing Parquet Files</h2>
+<div id="writing-a-parquet-file" class="section level3">
+<h3><span class="header-section-number">2.1.1</span> Writing a Parquet file</h3>
+<p>You can write Parquet files to disk using <code>arrow::write_parquet()</code>.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="reading-and-writing-data.html#cb1-1"></a><span class="co"># Create table</span></span>
+<span id="cb1-2"><a href="reading-and-writing-data.html#cb1-2"></a>my_table &lt;-<span class="st"> </span>Table<span class="op">$</span><span class="kw">create</span>(tibble<span class="op">::</span><span class="kw">tibble</span>(<span class="dt">group =</span> <span class="kw">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;C&quot;</span>), <span class="dt">score =</span> <span class="kw">c</span>(<span class="dv">99</span>, <span class="dv">97</span>, <span class="dv">99</span>)))</span>
+<span id="cb1-3"><a href="reading-and-writing-data.html#cb1-3"></a><span class="co"># Write to Parquet</span></span>
+<span id="cb1-4"><a href="reading-and-writing-data.html#cb1-4"></a><span class="kw">write_parquet</span>(my_table, <span class="st">&quot;my_table.parquet&quot;</span>)</span></code></pre></div>
+</div>
+<div id="reading-a-parquet-file" class="section level3">
+<h3><span class="header-section-number">2.1.2</span> Reading a Parquet file</h3>
+<p>Given a Parquet file, it can be read back to an Arrow Table by using <code>arrow::read_parquet()</code>.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="reading-and-writing-data.html#cb2-1"></a>parquet_tbl &lt;-<span class="st"> </span><span class="kw">read_parquet</span>(<span class="st">&quot;my_table.parquet&quot;</span>)</span>
+<span id="cb2-2"><a href="reading-and-writing-data.html#cb2-2"></a><span class="kw">head</span>(parquet_tbl)</span></code></pre></div>
+<pre><code>## # A tibble: 3 x 2
+##   group score
+##   &lt;chr&gt; &lt;dbl&gt;
+## 1 A        99
+## 2 B        97
+## 3 C        99</code></pre>
+<p>If the argument <code>as_data_frame</code> was set to <code>TRUE</code> (the default), the file was read in as a <code>data.frame</code> object.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="reading-and-writing-data.html#cb4-1"></a><span class="kw">class</span>(parquet_tbl)</span></code></pre></div>
+<pre><code>## [1] &quot;tbl_df&quot;     &quot;tbl&quot;        &quot;data.frame&quot;</code></pre>
+<p>If you set <code>as_data_frame</code> to <code>FALSE</code>, the file will be read in as an Arrow Table.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="reading-and-writing-data.html#cb6-1"></a>my_table_arrow_table &lt;-<span class="st"> </span><span class="kw">read_parquet</span>(<span class="st">&quot;my_table.parquet&quot;</span>, <span class="dt">as_data_frame =</span> <span class="ot">FALSE</span>)</span>
+<span id="cb6-2"><a href="reading-and-writing-data.html#cb6-2"></a><span class="kw">head</span>(my_table_arrow_table)</span></code></pre></div>
+<pre><code>## Table
+## 3 rows x 2 columns
+## $group &lt;string&gt;
+## $score &lt;double&gt;</code></pre>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="reading-and-writing-data.html#cb8-1"></a><span class="kw">class</span>(my_table_arrow_table)</span></code></pre></div>
+<pre><code>## [1] &quot;Table&quot;        &quot;ArrowTabular&quot; &quot;ArrowObject&quot;  &quot;R6&quot;</code></pre>
+</div>
+</div>
+<div id="how-to-read-a-partitioned-parquet-file-from-s3" class="section level2">
+<h2><span class="header-section-number">2.2</span> How to read a (partitioned) Parquet file from S3</h2>
+<p>You can open a Parquet file saved on S3 by calling <code>read_parquet()</code> and passing the relevant URI as the <code>file</code> argument.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="reading-and-writing-data.html#cb10-1"></a>df &lt;-<span class="st"> </span><span class="kw">read_parquet</span>(<span class="dt">file =</span> <span class="st">&quot;s3://ursa-labs-taxi-data/2019/06/data.parquet&quot;</span>)</span></code></pre></div>
+<p>For more in-depth instructions, including how to work with S3 buckets which require authentication, you can find a guide to reading and writing to/from S3 buckets here: <a href="https://arrow.apache.org/docs/r/articles/fs.html" class="uri">https://arrow.apache.org/docs/r/articles/fs.html</a>.</p>
+</div>
+<div id="how-to-filter-rows-or-columns-while-reading-a-parquet-file" class="section level2">
+<h2><span class="header-section-number">2.3</span> How to filter rows or columns while reading a Parquet file</h2>
+<p>When reading in a Parquet file, you can specify which columns to read in via the <code>col_select</code> argument.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="reading-and-writing-data.html#cb11-1"></a><span class="co"># Create table to read back in </span></span>
+<span id="cb11-2"><a href="reading-and-writing-data.html#cb11-2"></a>dist_time &lt;-<span class="st"> </span>Table<span class="op">$</span><span class="kw">create</span>(tibble<span class="op">::</span><span class="kw">tibble</span>(<span class="dt">distance =</span> <span class="kw">c</span>(<span class="fl">12.2</span>, <span class="fl">15.7</span>, <span class="fl">14.2</span>), <span class="dt">time =</span> <span class="kw">c</span>(<span class="dv">43</span>, <span class="dv">44</span>, <span class="dv">40</span>)))</span>
+<span id="cb11-3"><a href="reading-and-writing-data.html#cb11-3"></a><span class="co"># Write to Parquet</span></span>
+<span id="cb11-4"><a href="reading-and-writing-data.html#cb11-4"></a><span class="kw">write_parquet</span>(dist_time, <span class="st">&quot;dist_time.parquet&quot;</span>)</span>
+<span id="cb11-5"><a href="reading-and-writing-data.html#cb11-5"></a></span>
+<span id="cb11-6"><a href="reading-and-writing-data.html#cb11-6"></a><span class="co"># Read in only the &quot;time&quot; column</span></span>
+<span id="cb11-7"><a href="reading-and-writing-data.html#cb11-7"></a>time_only &lt;-<span class="st"> </span><span class="kw">read_parquet</span>(<span class="st">&quot;dist_time.parquet&quot;</span>, <span class="dt">col_select =</span> <span class="st">&quot;time&quot;</span>)</span>
+<span id="cb11-8"><a href="reading-and-writing-data.html#cb11-8"></a><span class="kw">head</span>(time_only)</span></code></pre></div>
+<pre><code>## # A tibble: 3 x 1
+##    time
+##   &lt;dbl&gt;
+## 1    43
+## 2    44
+## 3    40</code></pre>
+</div>
+<div id="reading-and-writing-csv-files" class="section level2">
+<h2><span class="header-section-number">2.4</span> Reading and Writing CSV files</h2>
+<p>You can use <code>write_csv_arrow()</code> to save an Arrow Table to disk.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="reading-and-writing-data.html#cb13-1"></a><span class="kw">write_csv_arrow</span>(cars, <span class="st">&quot;cars.csv&quot;</span>)</span></code></pre></div>
+<p>You can use <code>read_csv_arrow()</code> to read in a CSV file as an Arrow Table.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="reading-and-writing-data.html#cb14-1"></a>my_csv &lt;-<span class="st"> </span><span class="kw">read_csv_arrow</span>(<span class="st">&quot;cars.csv&quot;</span>)</span></code></pre></div>
+</div>
+<div id="reading-and-writing-partitioned-data" class="section level2">
+<h2><span class="header-section-number">2.5</span> Reading and Writing Partitioned Data</h2>
+<div id="writing-partitioned-data" class="section level3">
+<h3><span class="header-section-number">2.5.1</span> Writing Partitioned Data</h3>
+<p>You can use <code>write_dataset()</code> to save data to disk in partitions based on columns in the data.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="reading-and-writing-data.html#cb15-1"></a><span class="kw">write_dataset</span>(airquality, <span class="st">&quot;airquality_partitioned&quot;</span>, <span class="dt">partitioning =</span> <span class="kw">c</span>(<span class="st">&quot;Month&quot;</span>, <span class="st">&quot;Day&quot;</span>))</span>
+<span id="cb15-2"><a href="reading-and-writing-data.html#cb15-2"></a><span class="kw">list.files</span>(<span class="st">&quot;airquality_partitioned&quot;</span>)</span></code></pre></div>
+<pre><code>## [1] &quot;Month=5&quot; &quot;Month=6&quot; &quot;Month=7&quot; &quot;Month=8&quot; &quot;Month=9&quot;</code></pre>
+<p>As you can see, this has created folders based on the first partition variable supplied, <code>Month</code>.</p>
+<p>If you take a look in one of these folders, you will see that the data is then partitioned by the second partition variable, <code>Day</code>.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="reading-and-writing-data.html#cb17-1"></a><span class="kw">list.files</span>(<span class="st">&quot;airquality_partitioned/Month=5&quot;</span>)</span></code></pre></div>
+<pre><code>##  [1] &quot;Day=1&quot;  &quot;Day=10&quot; &quot;Day=11&quot; &quot;Day=12&quot; &quot;Day=13&quot; &quot;Day=14&quot; &quot;Day=15&quot; &quot;Day=16&quot;
+##  [9] &quot;Day=17&quot; &quot;Day=18&quot; &quot;Day=19&quot; &quot;Day=2&quot;  &quot;Day=20&quot; &quot;Day=21&quot; &quot;Day=22&quot; &quot;Day=23&quot;
+## [17] &quot;Day=24&quot; &quot;Day=25&quot; &quot;Day=26&quot; &quot;Day=27&quot; &quot;Day=28&quot; &quot;Day=29&quot; &quot;Day=3&quot;  &quot;Day=30&quot;
+## [25] &quot;Day=31&quot; &quot;Day=4&quot;  &quot;Day=5&quot;  &quot;Day=6&quot;  &quot;Day=7&quot;  &quot;Day=8&quot;  &quot;Day=9&quot;</code></pre>
+<p>Each of these folders contains 1 or more Parquet files containing the relevant partition of the data.</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="reading-and-writing-data.html#cb19-1"></a><span class="kw">list.files</span>(<span class="st">&quot;airquality_partitioned/Month=5/Day=10&quot;</span>)</span></code></pre></div>
+<pre><code>## [1] &quot;part-9.parquet&quot;</code></pre>
+</div>
+<div id="reading-partitioned-data" class="section level3">
+<h3><span class="header-section-number">2.5.2</span> Reading Partitioned Data</h3>
+<p>You can use <code>open_dataset()</code> to read partitioned data.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="reading-and-writing-data.html#cb21-1"></a><span class="co"># Write some partitioned data to disk to read back in</span></span>
+<span id="cb21-2"><a href="reading-and-writing-data.html#cb21-2"></a><span class="kw">write_dataset</span>(airquality, <span class="st">&quot;airquality_partitioned&quot;</span>, <span class="dt">partitioning =</span> <span class="kw">c</span>(<span class="st">&quot;Month&quot;</span>, <span class="st">&quot;Day&quot;</span>))</span>
+<span id="cb21-3"><a href="reading-and-writing-data.html#cb21-3"></a></span>
+<span id="cb21-4"><a href="reading-and-writing-data.html#cb21-4"></a><span class="co"># Read data from directory</span></span>
+<span id="cb21-5"><a href="reading-and-writing-data.html#cb21-5"></a>air_data &lt;-<span class="st"> </span><span class="kw">open_dataset</span>(<span class="st">&quot;airquality_partitioned&quot;</span>)</span>
+<span id="cb21-6"><a href="reading-and-writing-data.html#cb21-6"></a></span>
+<span id="cb21-7"><a href="reading-and-writing-data.html#cb21-7"></a><span class="co"># View data</span></span>
+<span id="cb21-8"><a href="reading-and-writing-data.html#cb21-8"></a>air_data</span></code></pre></div>
+<pre><code>## FileSystemDataset with 153 Parquet files
+## Ozone: int32
+## Solar.R: int32
+## Wind: double
+## Temp: int32
+## Month: int32
+## Day: int32
+## 
+## See $metadata for additional Schema metadata</code></pre>
+</div>
+</div>
+<div id="reading-and-writing-feather-files" class="section level2">
+<h2><span class="header-section-number">2.6</span> Reading and Writing Feather files</h2>
+<div id="write-an-ipcfeather-v2-file" class="section level3">
+<h3><span class="header-section-number">2.6.1</span> Write an IPC/Feather V2 file</h3>
+<p>The Arrow IPC file format is identical to the Feather version 2 format. If you call <code>write_arrow()</code>, you will get a warning telling you to use <code>write_feather()</code> instead.</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="reading-and-writing-data.html#cb23-1"></a><span class="co"># Create table</span></span>
+<span id="cb23-2"><a href="reading-and-writing-data.html#cb23-2"></a>my_table &lt;-<span class="st"> </span>Table<span class="op">$</span><span class="kw">create</span>(tibble<span class="op">::</span><span class="kw">tibble</span>(<span class="dt">group =</span> <span class="kw">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;C&quot;</span>), <span class="dt">score =</span> <span class="kw">c</span>(<span class="dv">99</span>, <span class="dv">97</span>, <span class="dv">99</span>)))</span>
+<span id="cb23-3"><a href="reading-and-writing-data.html#cb23-3"></a><span class="kw">write_arrow</span>(my_table, <span class="st">&quot;my_table.arrow&quot;</span>)</span></code></pre></div>
+<pre><code>## Warning: Use &#39;write_ipc_stream&#39; or &#39;write_feather&#39; instead.</code></pre>
+<p>Instead, you can use <code>write_feather()</code>.</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="reading-and-writing-data.html#cb25-1"></a>my_table &lt;-<span class="st"> </span>Table<span class="op">$</span><span class="kw">create</span>(tibble<span class="op">::</span><span class="kw">tibble</span>(<span class="dt">group =</span> <span class="kw">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;C&quot;</span>), <span class="dt">score =</span> <span class="kw">c</span>(<span class="dv">99</span>, <span class="dv">97</span>, <span class="dv">99</span>)))</span>
+<span id="cb25-2"><a href="reading-and-writing-data.html#cb25-2"></a><span class="kw">write_feather</span>(my_table, <span class="st">&quot;my_table.arrow&quot;</span>)</span></code></pre></div>
+</div>
+<div id="write-a-feather-version-1-file" class="section level3">
+<h3><span class="header-section-number">2.6.2</span> Write a Feather (version 1) file</h3>
+<p>You can write data in the original Feather format by setting the <code>version</code> parameter to <code>1</code>.</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="reading-and-writing-data.html#cb26-1"></a><span class="co"># Create table</span></span>
+<span id="cb26-2"><a href="reading-and-writing-data.html#cb26-2"></a>my_table &lt;-<span class="st"> </span>Table<span class="op">$</span><span class="kw">create</span>(tibble<span class="op">::</span><span class="kw">tibble</span>(<span class="dt">group =</span> <span class="kw">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;C&quot;</span>), <span class="dt">score =</span> <span class="kw">c</span>(<span class="dv">99</span>, <span class="dv">97</span>, <span class="dv">99</span>)))</span>
+<span id="cb26-3"><a href="reading-and-writing-data.html#cb26-3"></a><span class="co"># Write to Feather format V1</span></span>
+<span id="cb26-4"><a href="reading-and-writing-data.html#cb26-4"></a><span class="kw">write_feather</span>(mtcars, <span class="st">&quot;my_table.feather&quot;</span>, <span class="dt">version =</span> <span class="dv">1</span>)</span></code></pre></div>
+</div>
+<div id="read-a-feather-file" class="section level3">
+<h3><span class="header-section-number">2.6.3</span> Read a Feather file</h3>
+<p>You can read Feather files in via <code>read_feather()</code>.</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="reading-and-writing-data.html#cb27-1"></a>my_feather_tbl &lt;-<span class="st"> </span><span class="kw">read_feather</span>(<span class="st">&quot;my_table.arrow&quot;</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="reading-and-writing-streaming-ipc-files" class="section level2">
+<h2><span class="header-section-number">2.7</span> Reading and Writing Streaming IPC Files</h2>
+<p>You can write to the IPC stream format using <code>write_ipc_stream()</code>.</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="reading-and-writing-data.html#cb28-1"></a><span class="co"># Create table</span></span>
+<span id="cb28-2"><a href="reading-and-writing-data.html#cb28-2"></a>my_table &lt;-<span class="st"> </span>Table<span class="op">$</span><span class="kw">create</span>(tibble<span class="op">::</span><span class="kw">tibble</span>(<span class="dt">group =</span> <span class="kw">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;C&quot;</span>), <span class="dt">score =</span> <span class="kw">c</span>(<span class="dv">99</span>, <span class="dv">97</span>, <span class="dv">99</span>)))</span>
+<span id="cb28-3"><a href="reading-and-writing-data.html#cb28-3"></a><span class="co"># Write to IPC stream format</span></span>
+<span id="cb28-4"><a href="reading-and-writing-data.html#cb28-4"></a><span class="kw">write_ipc_stream</span>(my_table, <span class="st">&quot;my_table.arrows&quot;</span>)</span></code></pre></div>
+<p>You can read from IPC stream format using <code>read_ipc_stream()</code>.</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="reading-and-writing-data.html#cb29-1"></a>my_ipc_stream &lt;-<span class="st"> </span>arrow<span class="op">::</span><span class="kw">read_ipc_stream</span>(<span class="st">&quot;my_table.arrows&quot;</span>)</span></code></pre></div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="creating-arrow-objects.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/ursacomputing/arrow-cookbook/edit/master/r/content/initial_recipes.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>

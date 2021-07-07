@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Arrow Cookbook</title>
-  <meta name="description" content="Arrow Cookbook" />
+  <title>4 Manipulating Data | Arrow Cookbook</title>
+  <meta name="description" content="4 Manipulating Data | Arrow Cookbook" />
   <meta name="generator" content="bookdown 0.22 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Arrow Cookbook" />
+  <meta property="og:title" content="4 Manipulating Data | Arrow Cookbook" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Arrow Cookbook" />
+  <meta name="twitter:title" content="4 Manipulating Data | Arrow Cookbook" />
   
   
   
@@ -29,8 +29,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
+<link rel="prev" href="creating-arrow-objects.html"/>
 
-<link rel="next" href="reading-and-writing-data.html"/>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -181,21 +181,85 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="header">
-<h1 class="title">Arrow Cookbook</h1>
+<div id="manipulating-data" class="section level1">
+<h1><span class="header-section-number">4</span> Manipulating Data</h1>
+<div id="computing-meanminmax-etc-value-of-an-array" class="section level2">
+<h2><span class="header-section-number">4.1</span> Computing Mean/Min/Max, etc value of an array</h2>
+<p>Many base R functions such as <code>mean()</code>, <code>min()</code>, and <code>max()</code> have been mapped to their Arrow equivalents, and so can be called on Arrow Array objects in the same way. They will return Arrow object themselves.</p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="manipulating-data.html#cb42-1"></a>my_values &lt;-<span class="st"> </span>Array<span class="op">$</span><span class="kw">create</span>(<span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>, <span class="ot">NA</span>))</span>
+<span id="cb42-2"><a href="manipulating-data.html#cb42-2"></a><span class="kw">mean</span>(my_values, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
+<pre><code>## Scalar
+## 3</code></pre>
+<p>If you want to use an R function which does not have an Arrow mapping, you can use <code>as.vector()</code> to convert Arrow objects to base R vectors.</p>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="manipulating-data.html#cb44-1"></a><span class="kw">fivenum</span>(<span class="kw">as.vector</span>(my_values))</span></code></pre></div>
+<pre><code>## [1] 1 2 3 4 5</code></pre>
 </div>
-<div id="preface" class="section level1">
-<h1><span class="header-section-number">1</span> Preface</h1>
-<p>This cookbook aims to provide a number of recipes showing how to perform common tasks using <code>arrow</code>.</p>
+<div id="counting-occurrences-of-elements-in-an-array" class="section level2">
+<h2><span class="header-section-number">4.2</span> Counting occurrences of elements in an array</h2>
+<p>You can use <code>value_count()</code> to count elements in an Array.</p>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="manipulating-data.html#cb46-1"></a>repeated_vals &lt;-<span class="st"> </span>Array<span class="op">$</span><span class="kw">create</span>(<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">3</span>))</span>
+<span id="cb46-2"><a href="manipulating-data.html#cb46-2"></a><span class="kw">value_counts</span>(repeated_vals)</span></code></pre></div>
+<pre><code>## StructArray
+## &lt;struct&lt;values: double, counts: int64&gt;&gt;
+## -- is_valid: all not null
+## -- child 0 type: double
+##   [
+##     1,
+##     2,
+##     3
+##   ]
+## -- child 1 type: int64
+##   [
+##     2,
+##     1,
+##     5
+##   ]</code></pre>
+</div>
+<div id="applying-arithmetic-functions-to-arrays." class="section level2">
+<h2><span class="header-section-number">4.3</span> Applying arithmetic functions to arrays.</h2>
+<p>You can use the various arithmetic operators on Array objects.</p>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="manipulating-data.html#cb48-1"></a>num_array &lt;-<span class="st"> </span>Array<span class="op">$</span><span class="kw">create</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>)</span>
+<span id="cb48-2"><a href="manipulating-data.html#cb48-2"></a>num_array <span class="op">+</span><span class="st"> </span><span class="dv">10</span></span></code></pre></div>
+<pre><code>## Array
+## &lt;double&gt;
+## [
+##   11,
+##   12,
+##   13,
+##   14,
+##   15,
+##   16,
+##   17,
+##   18,
+##   19,
+##   20
+## ]</code></pre>
+<p>You’ll get the same result if you pass in the value you’re adding as an Arrow object.</p>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="manipulating-data.html#cb50-1"></a>num_array <span class="op">+</span><span class="st"> </span>Scalar<span class="op">$</span><span class="kw">create</span>(<span class="dv">10</span>)</span></code></pre></div>
+<pre><code>## Array
+## &lt;double&gt;
+## [
+##   11,
+##   12,
+##   13,
+##   14,
+##   15,
+##   16,
+##   17,
+##   18,
+##   19,
+##   20
+## ]</code></pre>
 
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
+<a href="creating-arrow-objects.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
 
-<a href="reading-and-writing-data.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -227,7 +291,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/ursacomputing/arrow-cookbook/edit/master/r/content/index.Rmd",
+"link": "https://github.com/ursacomputing/arrow-cookbook/edit/master/r/content/initial_recipes.Rmd",
 "text": "Edit"
 },
 "history": {
