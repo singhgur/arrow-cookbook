@@ -38,7 +38,7 @@ rdeps:
 	R -s -e 'if (!require("pacman")) install.packages("pacman")'
 	R -s -e 'pacman::p_load("testthat", "bookdown", "xfun", "knitr", "purrr", "remotes", "dplyr")'
 	R -s -e 'pacman::p_load_gh("rmflight/testrmd")'
-	R -s -e 'install.packages("arrow", repos = "https://arrow-r-nightly.s3.amazonaws.com")'
+	R -s -e 'install.packages("arrow", repos = c("https://arrow-r-nightly.s3.amazonaws.com", getOption("repos")))'
 
 r: rdeps
 	@echo ">>> Building R Cookbook <<<\n"
