@@ -1,6 +1,5 @@
 # Work with data in different formats
 
-This chapter contains recipes related to reading and writing data from disk using Apache Arrow.
 
 ## Read and write Feather or Arrow IPC files
 
